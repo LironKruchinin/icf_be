@@ -8,12 +8,12 @@ import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
-    // UserModule,
     PassportModule,
     JwtModule.register({
       secret: String(process.env.JWT_SECRET),
       signOptions: { expiresIn: '1d' }
-    })
+    }),
+    UserModule
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],

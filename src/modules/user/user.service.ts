@@ -11,7 +11,6 @@ import { AuthService } from '../auth/auth.service';
 export class UserService {
     constructor(
         @InjectModel('User') private userModel: Model<User>,
-        private readonly authService: AuthService
     ) { }
 
     async create(registerDto: RegisterDto) {
@@ -33,18 +32,6 @@ export class UserService {
         registerDto['created_at'] = Date.now()
         registerDto['roles'] = ['basic']
         return this.userModel.create(registerDto)
-    }
-
-    async login(email: string, password: string) {
-        const sub: string | null = await this.validateUser(email, password)
-
-        if (sub !== null) {
-            const token = await this.authService.jwtToken(email, sub)
-            return token
-        } else {
-            throw new ConflictException('Incorrect password')
-        }
-
     }
 
     async validateUser(email: string, userPassword: string) {
