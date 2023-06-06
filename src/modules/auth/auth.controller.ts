@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { RegisterDto } from '../user/dto/register.dto';
 import { LoginDto } from '../user/dto/login.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -14,7 +14,6 @@ export class AuthController {
 
     @Post('register')
     async register(@Body() registerUserDto: RegisterDto) {
-
         try {
             const user = await this.userService.create(registerUserDto)
             return user
@@ -33,13 +32,22 @@ export class AuthController {
         }
     }
 
+    // @UseGuards(JwtAuthGuard)
+    // @Post('profile')
+    // async getProfile(@Req() req: any) {
+    //     const user = req.user
+    //     return { email: user.email }
+    // }
+
     @UseGuards(JwtAuthGuard)
-    @Get('profile')
-    async getProfile(@Req() req: any) {
-        const user = req.user
-        console.log('hello');
-
-
-        return 'testing'
+    @Post('profile/:id')
+    async getProfile(@Param('id') id: string) {
+        console.log(id);
+        try {
+            const user = await this.userService.getUserById(id)
+            return user
+        } catch (err) {
+            throw err
+        }
     }
 }
