@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { RegisterDto } from '../user/dto/register.dto';
 import { LoginDto } from '../user/dto/login.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -15,8 +15,14 @@ export class AuthController {
     @Post('register')
     async register(@Body() registerUserDto: RegisterDto) {
         try {
-            const user = await this.userService.create(registerUserDto)
-            return user
+            const missingUserInfo = await this.authService.isUserDataEmpty(registerUserDto)
+
+            if (missingUserInfo.length > 0) throw new ConflictException(`${missingUserInfo} is empty`)
+
+            else {
+                const user = await this.userService.create(registerUserDto)
+                return user
+            }
         } catch (err) {
             throw err
         }
@@ -25,8 +31,12 @@ export class AuthController {
     @Post('login')
     async login(@Body() loginUserDto: LoginDto) {
         try {
-            const { email, password } = loginUserDto
-            return this.authService.login(email, password)
+            const missingUserInfo = await this.authService.isUserDataEmpty(loginUserDto)
+            if (missingUserInfo.length > 0) throw new ConflictException(`${missingUserInfo} is empty`)
+            else {
+                const { email, password } = loginUserDto
+                return this.authService.login(email, password)
+            }
         } catch (err) {
             throw err
         }

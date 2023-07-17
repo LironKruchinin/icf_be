@@ -17,6 +17,14 @@ export class AuthService {
         } else {
             throw new ConflictException('Incorrect password')
         }
+    }
 
+    async isUserDataEmpty(userInfo) {
+        const emptyKeys = []
+
+        for (const [key, value] of Object.entries(userInfo)) {
+            if (!value) emptyKeys.push(key)
+        }
+        return emptyKeys
     }
 }
