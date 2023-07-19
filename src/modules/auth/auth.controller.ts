@@ -14,6 +14,8 @@ export class AuthController {
 
     @Post('register')
     async register(@Body() registerUserDto: RegisterDto) {
+        console.log('hello');
+
         try {
             const missingUserInfo = await this.authService.isUserDataEmpty(registerUserDto)
 
@@ -31,6 +33,8 @@ export class AuthController {
     @Post('login')
     async login(@Body() loginUserDto: LoginDto) {
         try {
+            console.log('hello');
+
             const missingUserInfo = await this.authService.isUserDataEmpty(loginUserDto)
             if (missingUserInfo.length > 0) throw new ConflictException(`${missingUserInfo} is empty`)
             else {
@@ -42,22 +46,22 @@ export class AuthController {
         }
     }
 
-    // @UseGuards(JwtAuthGuard)
-    // @Post('profile')
-    // async getProfile(@Req() req: any) {
-    //     const user = req.user
-    //     return { email: user.email }
-    // }
-
     @UseGuards(JwtAuthGuard)
-    @Post('profile/:id')
-    async getProfile(@Param('id') id: string) {
-        console.log(id);
-        try {
-            const user = await this.userService.getUserById(id)
-            return user
-        } catch (err) {
-            throw err
-        }
+    @Post('profile')
+    async getProfile(@Req() req: any) {
+        const user = req.user
+        return { email: user.email }
     }
+
+    // @UseGuards(JwtAuthGuard)
+    // @Post('profile/:id')
+    // async getProfile(@Param('id') id: string) {
+    //     console.log(id);
+    //     try {
+    //         const user = await this.userService.getUserById(id)
+    //         return user
+    //     } catch (err) {
+    //         throw err
+    //     }
+    // }
 }

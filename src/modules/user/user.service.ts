@@ -9,7 +9,7 @@ export class UserService {
     constructor(@InjectModel('User') private userModel: Model<User>) { }
 
     async create(registerDto: RegisterDto) {
-        const { email, first_name, last_name, password, phone_number } = registerDto
+        const { email, first_name, user_name, password, phone_number } = registerDto
         const userExists = await this.isUserExists({ email })
 
         if (userExists) {
