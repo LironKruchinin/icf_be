@@ -27,4 +27,12 @@ export class AuthService {
         }
         return emptyKeys
     }
+
+    async getAllUsers() {
+        try {
+            return this.userService.getAllUsers()
+        } catch (err) {
+            throw new ConflictException('No users to return')
+        }
+    }
 }

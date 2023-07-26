@@ -49,4 +49,12 @@ export class UserService {
     async getUserById(id: string) {
         return this.userModel.findById(id).exec()
     }
+
+    async getAllUsers() {
+        try {
+            return this.userModel.find().exec()
+        } catch (err) {
+            console.log('err');
+        }
+    }
 }

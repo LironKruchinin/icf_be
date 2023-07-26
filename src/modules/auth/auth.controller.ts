@@ -48,11 +48,21 @@ export class AuthController {
 
     @UseGuards(JwtAuthGuard)
     @Post('profile')
-    async getProfile(@Req() req: any) {
-        const user = req.user
-        return { email: user.email }
+    async getProfile(@Body() body: any) {
+        const email = body.email
+        console.log(email);
+
+        return { email: email }
     }
 
+    @Post('users')
+    async getUsers() {
+        try {
+            return this.authService.getAllUsers()
+        } catch (err) {
+            throw err
+        }
+    }
     // @UseGuards(JwtAuthGuard)
     // @Post('profile/:id')
     // async getProfile(@Param('id') id: string) {
