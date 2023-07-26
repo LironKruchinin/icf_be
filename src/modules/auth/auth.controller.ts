@@ -14,7 +14,7 @@ export class AuthController {
 
     @Post('register')
     async register(@Body() registerUserDto: RegisterDto) {
-        console.log('hello');
+        // console.log(process.env.JWT_SECRET);
 
         try {
             const missingUserInfo = await this.authService.isUserDataEmpty(registerUserDto)
@@ -33,7 +33,6 @@ export class AuthController {
     @Post('login')
     async login(@Body() loginUserDto: LoginDto) {
         try {
-            console.log('hello');
 
             const missingUserInfo = await this.authService.isUserDataEmpty(loginUserDto)
             if (missingUserInfo.length > 0) throw new ConflictException(`${missingUserInfo} is empty`)
@@ -48,11 +47,10 @@ export class AuthController {
 
     @UseGuards(JwtAuthGuard)
     @Post('profile')
-    async getProfile(@Body() body: any) {
-        const email = body.email
+    async getProfile(@Req() req, @Body() body: any) {
+        const email = body.email;
         console.log(email);
-
-        return { email: email }
+        return { email: email };
     }
 
     @Post('users')
