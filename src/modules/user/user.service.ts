@@ -9,7 +9,13 @@ export class UserService {
     constructor(@InjectModel('User') private userModel: Model<User>) { }
 
     async create(registerDto: RegisterDto) {
-        const { email, first_name, user_name, password, phone_number } = registerDto
+        const {
+            email,
+            first_name,
+            user_name,
+            password,
+            phone_number
+        } = registerDto
         const userExists = await this.isUserExists({ email })
 
         if (userExists) {
@@ -19,9 +25,11 @@ export class UserService {
         const saltRounds = +process.env.SALT_ROUNDS
         const salt = bcrypt.genSaltSync(saltRounds)
         const hashedPassword = await bcrypt.hash(password, salt)
-        registerDto.password = hashedPassword.slice(-(hashedPassword.length - process.env.SALT_SECRET.length))
+        registerDto.password = hashedPassword.slice(
+            -(hashedPassword.length - process.env.SALT_SECRET.length))
         const hashedPhoneNumber = await bcrypt.hash(phone_number, salt)
-        registerDto.phone_number = hashedPhoneNumber.slice(-(hashedPhoneNumber.length - process.env.SALT_SECRET.length))
+        registerDto.phone_number = hashedPhoneNumber.slice(
+            -(hashedPhoneNumber.length - process.env.SALT_SECRET.length))
         registerDto['salt'] = salt
         registerDto['created_at'] = Date.now()
         registerDto['roles'] = ['basic']
@@ -30,12 +38,14 @@ export class UserService {
 
     async validateUser(email: string, userPassword: string) {
         const user: User | null = await this.isUserExists({ email })
+        console.log(user);
+
         const isPasswordMatch = await bcrypt.compare(
             userPassword,
             `${process.env.SALT_SECRET}${user.password}`
         )
 
-        if (isPasswordMatch) return user._id.toString()
+        if (isPasswordMatch) return user
         else { return null }
     }
 

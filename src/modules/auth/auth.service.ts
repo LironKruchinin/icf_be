@@ -1,6 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
+import { User } from 'src/entity/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -9,10 +10,12 @@ export class AuthService {
         private readonly userService: UserService
     ) { }
     async login(email: string, password: string) {
-        const sub: string | null = await this.userService.validateUser(email, password)
+        const { _id: sub, roles }: User = await this.userService.validateUser(email, password)
 
         if (sub !== null) {
-            const payload = { email, sub }
+            const payload = { email, sub, roles }
+            console.log(this.jwtService.sign(payload));
+
             return { access_token: this.jwtService.sign(payload) }
         } else {
             throw new ConflictException('Incorrect password')
@@ -35,4 +38,24 @@ export class AuthService {
             throw new ConflictException('No users to return')
         }
     }
+
+    async getUser(email: string) {
+        try {
+            console.log(email);
+
+        } catch (err) {
+
+        }
+    }
+
+    async decodeJwtToken(token: string) {
+        try {
+            const decodedToken = this.jwtService.decode(token)
+            return decodedToken
+        } catch (err) {
+            console.error('Invalid or expired token:', err.message);
+            return null
+        }
+    }
+
 }

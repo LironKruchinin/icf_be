@@ -1,9 +1,10 @@
-import { Body, ConflictException, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { RegisterDto } from '../user/dto/register.dto';
 import { LoginDto } from '../user/dto/login.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
+import { Response, Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -31,26 +32,48 @@ export class AuthController {
     }
 
     @Post('login')
-    async login(@Body() loginUserDto: LoginDto) {
+    async login(@Body() loginUserDto: LoginDto, @Res({ passthrough: true }) res: Response) {
         try {
-
             const missingUserInfo = await this.authService.isUserDataEmpty(loginUserDto)
             if (missingUserInfo.length > 0) throw new ConflictException(`${missingUserInfo} is empty`)
             else {
                 const { email, password } = loginUserDto
-                return this.authService.login(email, password)
+                const result = await this.authService.login(email, password)
+                res.cookie('access_token', result, {
+                    httpOnly: false,
+                    secure: false,
+                    sameSite: 'none',
+                    expires: new Date(Date.now() + 1 * 24 * 60 * 1000),
+                })
+                // response.cookie('auth_token', result.access_token, {
+                //     httpOnly: false, maxAge: 1000 * 60 * 60 * 24,
+                //     sameSite: 'lax',
+                //     secure: true
+                // })
+                return result
             }
         } catch (err) {
-            throw err
+            throw new ConflictException(`is empty`)
         }
     }
 
+    @Post('test')
+
+    findAll(@Res({ passthrough: true }) response: Response) {
+        response.cookie('key', 'value')
+    }
+
+
     @UseGuards(JwtAuthGuard)
     @Post('profile')
-    async getProfile(@Req() req, @Body() body: any) {
-        const email = body.email;
-        console.log(email);
-        return { email: email };
+    async getProfile(@Req() req, @Body() body: any, @Res() res: Response) {
+        try {
+            const email = body.email;
+
+            return res.json({ email: email });
+        } catch (err) {
+
+        }
     }
 
     @Post('users')
