@@ -64,26 +64,55 @@ export class AuthController {
     }
 
 
-    @UseGuards(JwtAuthGuard)
-    @Post('profile')
-    async getProfile(@Req() req, @Body() body: any, @Res() res: Response) {
+    // @UseGuards(JwtAuthGuard)
+    @Post('user/:id')
+    async getProfileById(@Param('id') id: string) {
         try {
-            const email = body.email;
-
-            return res.json({ email: email });
+            console.log('id', id);
+            const user = await this.userService.getUserById(id)
+            return user
         } catch (err) {
-
+            console.log('jwt route fail');
+            throw err
         }
     }
 
-    @Post('users')
-    async getUsers() {
+    @Post('profile/:id')
+    async getUserData(@Param('id') id: string) {
+        console.log(id);
         try {
-            return this.authService.getAllUsers()
+            const user = await this.userService.getUserById(id)
+            return user
         } catch (err) {
             throw err
         }
     }
+
+    // @UseGuards(JwtAuthGuard)
+    @Post('profile')
+    async getProfile(@Req() req, @Body() body: any, @Res() res: Response) {
+        try {
+            // const email = body.email;
+            console.log('body', body);
+
+            const user = await this.userService.getUserByQuery(body)
+
+            return res.json(user);
+        } catch (err) {
+
+        }
+    }
+
+
+    @Post('users')
+    async getUsers() {
+        try {
+            return this.userService.getAllUsers()
+        } catch (err) {
+            throw err
+        }
+    }
+
     // @UseGuards(JwtAuthGuard)
     // @Post('profile/:id')
     // async getProfile(@Param('id') id: string) {
