@@ -15,14 +15,14 @@ export class AuthController {
 
     @Post('register')
     async register(@Body() registerUserDto: RegisterDto) {
-        // console.log(process.env.JWT_SECRET);
-
         try {
             const missingUserInfo = await this.authService.isUserDataEmpty(registerUserDto)
 
             if (missingUserInfo.length > 0) throw new ConflictException(`${missingUserInfo} is empty`)
 
             else {
+                console.log('registerDto', registerUserDto);
+
                 const user = await this.userService.create(registerUserDto)
                 return user
             }
@@ -38,6 +38,8 @@ export class AuthController {
             if (missingUserInfo.length > 0) throw new ConflictException(`${missingUserInfo} is empty`)
             else {
                 const { email, password } = loginUserDto
+                console.log('login', email);
+
                 const result = await this.authService.login(email, password)
                 res.cookie('access_token', result, {
                     httpOnly: false,
@@ -57,13 +59,6 @@ export class AuthController {
         }
     }
 
-    @Post('test')
-
-    findAll(@Res({ passthrough: true }) response: Response) {
-        response.cookie('key', 'value')
-    }
-
-
     // @UseGuards(JwtAuthGuard)
     @Post('user/:id')
     async getProfileById(@Param('id') id: string) {
@@ -77,25 +72,17 @@ export class AuthController {
         }
     }
 
-    @Post('profile/:id')
-    async getUserData(@Param('id') id: string) {
-        console.log(id);
-        try {
-            const user = await this.userService.getUserById(id)
-            return user
-        } catch (err) {
-            throw err
-        }
-    }
-
     // @UseGuards(JwtAuthGuard)
     @Post('profile')
     async getProfile(@Req() req, @Body() body: any, @Res() res: Response) {
         try {
+            if (Object.keys(body).length === 0) return
             // const email = body.email;
             console.log('body', body);
 
             const user = await this.userService.getUserByQuery(body)
+            console.log('got user', user);
+
 
             return res.json(user);
         } catch (err) {
