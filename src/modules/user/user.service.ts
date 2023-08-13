@@ -60,6 +60,21 @@ export class UserService {
         return this.userModel.findById(id).exec()
     }
 
+    async getUserByQuery(query: {}): Promise<User | null> {
+        const user: User | null = await this.userModel.findOne(query).lean();
+
+        if (user) {
+            delete user.password
+            delete user.salt
+            delete user.phone_number
+            delete user.__v
+            return user
+        }
+
+        return user
+    }
+
+
     async getAllUsers() {
         try {
             return this.userModel.find().exec()
