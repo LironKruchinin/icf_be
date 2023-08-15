@@ -60,7 +60,7 @@ export class AuthController {
     }
 
     // @UseGuards(JwtAuthGuard)
-    @Post('user/:id')
+    @Post('profile/:id')
     async getProfileById(@Param('id') id: string) {
         try {
             console.log('id', id);
