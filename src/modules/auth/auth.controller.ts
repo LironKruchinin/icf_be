@@ -1,4 +1,4 @@
-import { Body, ConflictException, Controller, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Get, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { RegisterDto } from '../user/dto/register.dto';
 import { LoginDto } from '../user/dto/login.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -38,32 +38,30 @@ export class AuthController {
             if (missingUserInfo.length > 0) throw new ConflictException(`${missingUserInfo} is empty`)
             else {
                 const { email, password } = loginUserDto
-                console.log('login', email);
 
                 const result = await this.authService.login(email, password)
-                res.cookie('access_token', result, {
-                    httpOnly: false,
-                    secure: false,
-                    sameSite: 'none',
-                    expires: new Date(Date.now() + 1 * 24 * 60 * 1000),
-                })
-                // response.cookie('auth_token', result.access_token, {
-                //     httpOnly: false, maxAge: 1000 * 60 * 60 * 24,
-                //     sameSite: 'lax',
-                //     secure: true
-                // })
-                return result
+                const user = await this.userService.getUserByQuery({ email: email })
+
+                return { ...result, user }
             }
         } catch (err) {
             throw new ConflictException(`is empty`)
         }
     }
 
+    @Get('users')
+    async getUsers() {
+        try {
+            return this.userService.getAllUsers()
+        } catch (err) {
+            throw err
+        }
+    }
     // @UseGuards(JwtAuthGuard)
     @Post('profile/:id')
     async getProfileById(@Param('id') id: string) {
         try {
-            console.log('id', id);
+            // console.log('id', id);
             const user = await this.userService.getUserById(id)
             return user
         } catch (err) {
@@ -77,26 +75,15 @@ export class AuthController {
     async getProfile(@Req() req, @Body() body: any, @Res() res: Response) {
         try {
             if (Object.keys(body).length === 0) return
-            // const email = body.email;
-            console.log('body', body);
+            // console.log('body', body);
 
             const user = await this.userService.getUserByQuery(body)
-            console.log('got user', user);
+            // console.log('got user', user);
 
 
             return res.json(user);
         } catch (err) {
 
-        }
-    }
-
-
-    @Post('users')
-    async getUsers() {
-        try {
-            return this.userService.getAllUsers()
-        } catch (err) {
-            throw err
         }
     }
 
