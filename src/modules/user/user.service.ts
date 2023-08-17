@@ -77,7 +77,17 @@ export class UserService {
 
     async getAllUsers() {
         try {
-            return this.userModel.find().exec()
+            const users = this.userModel.find().lean().exec()
+            const protectedUsers = (await users).map((user) => {
+                delete user.password
+                delete user.salt
+                delete user.__v
+                return user
+            })
+            return protectedUsers
+
+
+
         } catch (err) {
             console.log('err');
         }
