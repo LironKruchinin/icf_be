@@ -9,7 +9,8 @@ export const UserSchema = new Schema({
     salt: { type: String, required: true },
     created_at: { type: Number, required: true },
     updated_at: { type: Number },
-    roles: { type: [String], default: ['basic'] }
+    roles: { type: [String], default: ['basic'] },
+    gameRole: { type: [String] },
 })
 
 export interface User extends Document {
@@ -22,4 +23,5 @@ export interface User extends Document {
     updated_at: number;
     salt: string;
     roles: [string];
+    gameRole: [string] | null;
 }
