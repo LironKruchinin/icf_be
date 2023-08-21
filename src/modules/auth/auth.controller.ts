@@ -58,10 +58,10 @@ export class AuthController {
         }
     }
     // @UseGuards(JwtAuthGuard)
-    @Post('profile/:id')
+    @Get('profile/:id')
     async getProfileById(@Param('id') id: string) {
         try {
-            // console.log('id', id);
+            console.log('id', id);
             const user = await this.userService.getUserById(id)
             return user
         } catch (err) {
