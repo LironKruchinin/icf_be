@@ -57,7 +57,13 @@ export class UserService {
     }
 
     async getUserById(id: string) {
-        return this.userModel.findById(id).exec()
+        const user: User | null = await this.userModel.findById(id).exec()
+
+        delete user.password
+        delete user.salt
+        delete user.phone_number
+        delete user.__v
+        return user
     }
 
     async getUserByQuery(query: {}): Promise<User | null> {
