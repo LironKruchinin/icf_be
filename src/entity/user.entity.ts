@@ -11,6 +11,7 @@ export const UserSchema = new Schema({
     updated_at: { type: Number },
     roles: { type: [String], default: ['basic'] },
     gameRole: { type: [String] },
+    user_color: { type: String }
 })
 
 export interface User extends Document {
@@ -24,4 +25,5 @@ export interface User extends Document {
     salt: string;
     roles: [string];
     gameRole: [string] | null;
+    user_color: string;
 }
