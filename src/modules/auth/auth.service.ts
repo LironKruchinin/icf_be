@@ -14,7 +14,7 @@ export class AuthService {
 
         if (sub !== null) {
             const payload = { email, sub, roles }
-            // console.log(this.jwtService.sign(payload));
+            console.log(this.jwtService.sign(payload));
 
             return { access_token: this.jwtService.sign(payload) }
         } else {

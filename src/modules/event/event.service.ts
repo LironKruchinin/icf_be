@@ -11,7 +11,6 @@ export class EventService {
 
   async create(createEventDto: CreateEventDto) {
     return this.eventModel.create(createEventDto)
-    // return 'This action adds a new event';
   }
 
   async findAll() {
@@ -23,7 +22,7 @@ export class EventService {
   }
 
   async update(id: string, updateEventDto: UpdateEventDto) {
-    return `This action updates a #${id} event`;
+    return this.eventModel.findByIdAndUpdate(id, updateEventDto, { new: true }).lean().exec()
   }
 
   async remove(id: string): Promise<DeleteResult> {

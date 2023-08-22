@@ -70,12 +70,12 @@ export class AuthController {
         }
     }
 
-    // @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Post('profile')
     async getProfile(@Req() req, @Body() body: any, @Res() res: Response) {
         try {
             if (Object.keys(body).length === 0) return
-            // console.log('body', body);
+            console.log('body', body);
 
             const user = await this.userService.getUserByQuery(body)
             // console.log('got user', user);

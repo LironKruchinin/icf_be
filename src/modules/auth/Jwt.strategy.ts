@@ -15,8 +15,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(payload: any) {
-        // console.log('Inside validate in JwtStrategy')
-        // console.log('Payload', payload)
+        console.log('Inside validate in JwtStrategy')
+        console.log('Payload', payload)
 
         const user = await this.userService.isUserExists(payload.email)
         if (!user) {
