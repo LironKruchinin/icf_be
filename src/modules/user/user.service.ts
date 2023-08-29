@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import { User } from 'src/entity/user.entity';
 import { RegisterDto } from './dto/register.dto';
+import { UpdateUserDto } from './dto/update.dto';
 @Injectable()
 export class UserService {
     constructor(@InjectModel('User') private userModel: Model<User>) { }
@@ -57,7 +58,7 @@ export class UserService {
     }
 
     async getUserById(id: string) {
-        const user: User | null = await this.userModel.findById(id).exec()
+        const user: User | null = await this.userModel.findById(id, '-password -salt -phone_number -__v').exec()
 
         delete user.password
         delete user.salt
@@ -67,7 +68,7 @@ export class UserService {
     }
 
     async getUserByQuery(query: {}): Promise<User | null> {
-        const user: User | null = await this.userModel.findOne(query).lean();
+        const user: User | null = await this.userModel.findOne(query, '-password -salt -phone_number -__v').lean();
 
         if (user) {
             delete user.password
@@ -80,20 +81,14 @@ export class UserService {
         return user
     }
 
+    async updateUser(id: string, updateUserDto: UpdateUserDto) {
+        return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true }).lean().exec()
+    }
 
     async getAllUsers() {
         try {
-            const users = this.userModel.find().lean().exec()
-            const protectedUsers = (await users).map((user) => {
-                delete user.password
-                delete user.salt
-                delete user.__v
-                return user
-            })
-            return protectedUsers
-
-
-
+            const users = this.userModel.find({}, '-password -salt -__v') //.lean().exec()
+            return users
         } catch (err) {
             console.log('err');
         }
