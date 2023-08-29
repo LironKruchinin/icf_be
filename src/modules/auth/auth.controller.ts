@@ -1,10 +1,11 @@
-import { Body, ConflictException, Controller, Get, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Get, Param, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { RegisterDto } from '../user/dto/register.dto';
 import { LoginDto } from '../user/dto/login.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
 import { Response, Request } from 'express';
+import { UpdateUserDto } from '../user/dto/update.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -57,6 +58,16 @@ export class AuthController {
             throw err
         }
     }
+
+    @Patch('user/:id')
+    async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+        try {
+            return this.userService.updateUser(id, updateUserDto)
+        } catch (err) {
+            throw err
+        }
+    }
+
     // @UseGuards(JwtAuthGuard)
     @Get('profile/:id')
     async getProfileById(@Param('id') id: string) {
