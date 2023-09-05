@@ -23,9 +23,9 @@ export class EventService {
 
     const users = (await this.userService.getAllUsers())
     const members = users.filter(user =>
-      user.roles.includes('member') ||
-      user.roles.includes('owner') ||
-      user.roles.includes('admin')
+      user.roles.map(role => role.roleName.toLowerCase()).includes('member') ||
+      user.roles.map(role => role.roleName.toLowerCase()).includes('owner') ||
+      user.roles.map(role => role.roleName.toLowerCase()).includes('admin')
     ).map(user => ({
       _id: user._id,
       email: user.email,
