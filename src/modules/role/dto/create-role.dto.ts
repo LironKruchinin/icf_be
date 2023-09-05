@@ -2,7 +2,7 @@ import { GameRole } from "src/modules/game-role/dto/create-game-role.dto";
 
 export class CreateRoleDto {
     groupName: string;
-    members: member[];
+    users: member[];
 }
 
 class member {
