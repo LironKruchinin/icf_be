@@ -3,6 +3,7 @@ import { EventService } from './event.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { VoteDto } from './dto/vote.dto';
 // import { Roles } from 'src/decorators/roles.decorator';
 
 @Controller('event')
@@ -16,6 +17,13 @@ export class EventController {
     console.log(createEventDto);
 
     return this.eventService.create(createEventDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('voteMission/:id')
+  async voteMission(@Param('id') eventId: string, @Body() voteDto: VoteDto) {
+    const vote = await this.eventService.voteMission(eventId, voteDto.userId, voteDto.teamId, voteDto.vote)
+    return vote
   }
 
   @Get()

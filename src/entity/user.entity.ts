@@ -11,6 +11,21 @@ const userGroups = new Schema({
     groupName: { type: String }
 })
 
+export class Mission {
+    _id: string;
+    eventName: string;
+    eventDate: number;
+}
+
+export class GroupData {
+    _id: string;
+    groupName: string;
+}
+
+export class GameRoleData {
+    _id: string;
+    gameRoleName: string;
+}
 
 export interface ReducedUser {
     _id: string;
@@ -19,6 +34,7 @@ export interface ReducedUser {
     user_name: string;
     gameRole: GameRole[] | null;
     userGroups: Group[] | null;
+    missions?: Mission[]
 }
 
 class Group {
@@ -42,9 +58,31 @@ export const UserSchema = new Schema({
     salt: { type: String, required: true },
     created_at: { type: Number, required: true },
     updated_at: { type: Number },
+    userGroups: [{
+        _id: Schema.Types.ObjectId,
+        groupName: String,
+        members: [
+            {
+                _id: Schema.Types.ObjectId,
+                first_name: String,
+                user_name: String,
+                gameRole: [{
+                    _id: Schema.Types.ObjectId,
+                    roleName: String,
+                }],
+            }]
+    }],
     roles: { type: [String], default: ['basic'] },
-    gameRole: { type: [String] },
-    user_color: { type: String }
+    gameRole: [{
+        _id: String,
+        gameRoleName: String,
+    }],
+    user_color: { type: String },
+    missions: [{
+        _id: String,
+        eventName: String,
+        eventDate: String
+    }]
 })
 
 export interface User extends Document {
@@ -58,6 +96,7 @@ export interface User extends Document {
     updated_at: number;
     salt: string;
     roles: string[];
+    missions?: Mission[];
     gameRole: GameRole[] | null;
     user_color: string;
     userGroups: Group[] | null;
@@ -70,7 +109,10 @@ export const ReducedUserSchema = new Schema({
     // created_at: { type: Number, required: true },
     // updated_at: { type: Number },
     // roles: { type: [String], default: ['basic'] },
-    userGroups: { type: [userGroups] },
+    userGroups: [{
+        _id: String,
+        groupName: String
+    }],
     gameRole: { type: [GameRoleSchema] },
 })
 

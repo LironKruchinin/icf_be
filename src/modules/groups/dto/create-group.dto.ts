@@ -9,6 +9,6 @@ export class CreateGroupDto {
 class member {
     _id: string;
     first_name: string;
-    user_name: string[];
-    gameRole: GameRole[];
+    user_name: string;
+    gameRole?: GameRole[];
 }

@@ -12,7 +12,14 @@ export const GroupSchema = new Schema({
     groupName: { type: String, required: true },
     groupDescription: { type: String },
     createdAt: { type: Number },
-    users: { type: [ReducedUserSchema] },
+    users: {
+        type: [{
+            first_name: { type: String, required: true },
+            user_name: { type: String, required: true },
+            userGroups: { type: [String] },
+            gameRole: { type: [String] },
+        }]
+    },
 })
 
 export type DeleteResult = {
@@ -33,6 +40,5 @@ export interface ReducedUser extends Document {
     _id: string;
     first_name: string;
     user_name: string;
-    userGroups: string[];
     gameRole: GameRole[];
 }

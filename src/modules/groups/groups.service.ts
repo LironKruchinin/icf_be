@@ -3,9 +3,11 @@ import { CreateGroupDto } from './dto/create-group.dto';
 import { Model } from 'mongoose';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { DeleteResult, Group } from '../../entity/group.entity';
+import { DeleteResult, Group, ReducedUser } from '../../entity/group.entity';
 import { UserService } from '../user/user.service';
-import { BasicUserData, User } from 'src/entity/user.entity';
+import { BasicUserData, GroupData, User } from 'src/entity/user.entity';
+
+// let _users: ReducedUser[]
 
 @Injectable()
 export class GroupsService {
@@ -16,12 +18,22 @@ export class GroupsService {
   ) { }
 
   async create(createGroupDto: CreateGroupDto) {
-    return this.groupModel.create(createGroupDto)
+    console.log(createGroupDto);
+    const newGroup = await this.groupModel.create({
+      ...createGroupDto,
+      users: createGroupDto.members
+    });
+    console.log(newGroup);
+
+    createGroupDto.members.forEach(member => {
+      this.addGroupToUser(member._id, { _id: newGroup._id, groupName: createGroupDto.groupName });
+    });
+
+    return newGroup;
   }
 
   findAll() {
     return this.groupModel.find().lean().exec()
-
   }
 
   findOne(id: string) {
@@ -32,24 +44,31 @@ export class GroupsService {
     return this.groupModel.findByIdAndUpdate(id, updateGroupDto, { new: true }).lean().exec()
   }
 
-  remove(id: string): Promise<DeleteResult> {
-    return this.groupModel.deleteOne({ _id: id }).exec();
+  async remove(id: string): Promise<DeleteResult> {
+    const usersWithMission = await this.userModel.find({ 'userGroups._id': id }).lean().exec()
+
+    for (const user of usersWithMission) {
+      await this.removeGroupFromUser(user._id, id)
+    }
+
+    return this.groupModel.deleteOne({ _id: id }).exec()
   }
 
-  addUserToRole(id: string, basicUserData: BasicUserData) {
-    return this.groupModel.findByIdAndUpdate(id,
-      { $push: { users: basicUserData } },
+  async addGroupToUser(id: string, groupData: GroupData) {
+    return this.userModel.findByIdAndUpdate(String(id),
+      { $push: { userGroups: groupData } },
       { new: true, upsert: true })
       .lean()
       .exec()
   }
 
-  removeUserToRole(id: string, userId: string) {
-    return this.groupModel.findByIdAndUpdate(id,
-      { $pull: { users: userId } },
+  async removeGroupFromUser(id: string, groupId: string) {
+
+    return this.userModel.findByIdAndUpdate(id,
+      { $pull: { userGroups: { _id: groupId } } },
       { new: true })
       .lean()
-      .exec()
+      .exec();
   }
 
 }
