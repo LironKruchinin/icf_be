@@ -14,6 +14,11 @@ export interface Role extends Document {
     users?: ReducedUser[]
 }
 
+export class RoleData {
+    _id: string;
+    roleName: string;
+}
+
 export type DeleteResult = {
     n?: number;
     ok?: number;
