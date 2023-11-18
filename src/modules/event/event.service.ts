@@ -19,7 +19,6 @@ export class EventService {
   ) { }
 
   async create(createEventDto: CreateEventDto) {
-    console.log(createEventDto);
 
     const users = (await this.userService.getAllUsers())
     const members = users.filter(user =>
@@ -36,6 +35,8 @@ export class EventService {
     }))
 
     createEventDto.groups = await this.groupsService.findAll()
+    console.log('groups', createEventDto.groups);
+
 
     createEventDto.users = members
     _users = members
@@ -65,7 +66,10 @@ export class EventService {
   }
 
   async findOne(id: string) {
-    return this.eventModel.findById(id)
+    const event = await this.eventModel.findById(id)
+
+    if (!event) throw new Error('Event not found')
+    return event
   }
 
   async update(id: string, updateEventDto: UpdateEventDto) {
@@ -83,17 +87,36 @@ export class EventService {
   }
 
   async voteMission(eventId: string, userId: string, teamId: string, vote: boolean) {
-    console.log(eventId, userId, teamId, vote);
     const event = await this.eventModel.findById(eventId)
 
     if (!event) { throw new Error('Event not found') }
-    const group = event.groups.find(g => g._id.toString() === teamId)
-    const existingVote = group.votes.find(v => v.userId.toString() === userId)
 
-    if (existingVote) {
-      existingVote.vote = vote
+    const group = event.groups.find(g => g._id.toString() === teamId)
+
+    if (!group) {
+      const newGroup = await this.groupsService.findOne(teamId)
+
+      event.groups.push({
+        groupName: newGroup.groupName,
+        _id: newGroup._id,
+        attendees: 0,
+        numberOfAttendees: 0,
+        votes: [
+          {
+            userId: userId,
+            vote
+          }
+        ]
+      })
+
     } else {
-      group.votes.push({ userId, vote })
+      const existingVote = group.votes.find(v => v.userId.toString() === userId)
+
+      if (existingVote) {
+        existingVote.vote = vote
+      } else {
+        group.votes.push({ userId, vote })
+      }
     }
 
     return event.save()

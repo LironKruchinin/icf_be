@@ -20,6 +20,7 @@ export const GroupSchema = new Schema({
             gameRole: { type: [String] },
         }]
     },
+    groupRoles: { type: [String] }
 })
 
 export type DeleteResult = {
@@ -34,6 +35,7 @@ export interface Group extends Document {
     groupDescription: string;
     createdAt: number;
     users?: ReducedUser[]
+    groupRoles?: { _id: string }[]
 }
 
 export interface ReducedUser extends Document {

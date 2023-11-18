@@ -1,17 +1,17 @@
 export class CreateGameRoleDto {
     gameRoleName: string;
     gameRoleDescription: string;
-    members: member[];
+    users: Member[];
 }
 
 
 export class CreateGroupDto {
     groupName: string;
     groupDescription: string;
-    members: member[];
+    users: Member[];
 }
 
-class member {
+class Member {
     _id: string;
     first_name: string;
     user_name: string[];

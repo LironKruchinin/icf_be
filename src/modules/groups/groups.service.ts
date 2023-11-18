@@ -18,16 +18,19 @@ export class GroupsService {
   ) { }
 
   async create(createGroupDto: CreateGroupDto) {
-    console.log(createGroupDto);
+    console.log('dto', createGroupDto);
     const newGroup = await this.groupModel.create({
       ...createGroupDto,
-      users: createGroupDto.members
+      users: createGroupDto.users
     });
-    console.log(newGroup);
+    console.log('submited', newGroup)
 
-    createGroupDto.members.forEach(member => {
-      this.addGroupToUser(member._id, { _id: newGroup._id, groupName: createGroupDto.groupName });
-    });
+    if (createGroupDto.users) {
+      createGroupDto.users.forEach(member => {
+        this.addGroupToUser(member._id, { _id: newGroup._id, groupName: createGroupDto.groupName });
+      })
+    }
+
 
     return newGroup;
   }

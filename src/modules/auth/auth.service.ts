@@ -12,9 +12,10 @@ export class AuthService {
     async login(email: string, password: string) {
         const { _id: sub, roles }: User = await this.userService.validateUser(email, password)
 
+
         if (sub !== null) {
             const payload = { email, sub, roles }
-            console.log(this.jwtService.sign(payload));
+
 
             return { access_token: this.jwtService.sign(payload) }
         } else {
@@ -34,6 +35,8 @@ export class AuthService {
     async decodeJwtToken(token: string) {
         try {
             const decodedToken = this.jwtService.decode(token)
+            console.log('decoded JWTToken', decodedToken);
+
             return decodedToken
         } catch (err) {
             console.error('Invalid or expired token:', err.message);

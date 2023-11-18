@@ -39,7 +39,7 @@ export class UserService {
 
     async validateUser(email: string, userPassword: string) {
         const user: User | null = await this.isUserExists({ email })
-        console.log(user);
+        // console.log('user', user);
 
         const isPasswordMatch = await bcrypt.compare(
             userPassword,
@@ -51,10 +51,14 @@ export class UserService {
     }
 
     async isUserExists(query) {
+
         const existingUser = await this.userModel.findOne({ ...query })
 
+        console.log(existingUser, query);
+
         if (existingUser) return existingUser
-        return null
+        else return null
+        // return null
     }
 
     async getUserById(id: string) {

@@ -59,6 +59,15 @@ export class AuthController {
         }
     }
 
+    @Get('users-array')
+    async getArrayOfUsers() {
+        try {
+
+        } catch (err) {
+
+        }
+    }
+
     @Patch('user/:id')
     async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
         try {
@@ -81,7 +90,7 @@ export class AuthController {
         }
     }
 
-    @UseGuards(JwtAuthGuard)
+    // @UseGuards(JwtAuthGuard)
     @Post('profile')
     async getProfile(@Req() req, @Body() body: any, @Res() res: Response) {
         try {

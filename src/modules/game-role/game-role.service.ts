@@ -19,7 +19,10 @@ export class GameRoleService {
   ) { }
 
   async create(createGameRoleDto: CreateGameRoleDto) {
-    const newRole = await this.gameRoleModel.create(createGameRoleDto)
+    const newRole = await this.gameRoleModel.create({
+      ...createGameRoleDto,
+      users: createGameRoleDto.users
+    })
     // const users = (await this.userService.getAllUsers()).filter(user =>
     //   user.roles.includes('member') ||
     //   user.roles.includes('owner') ||

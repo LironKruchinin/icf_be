@@ -8,14 +8,23 @@ const MissionSchema = new Schema({
 })
 
 const GameRoleSchema = new Schema({
-    _id: { type: String },
-    gameRoleName: { type: String }
+    _id: Schema.Types.ObjectId,
+    gameRoleName: { type: String },
+    gameRoleDescription: { type: String },
+    users: [{
+        first_name: String,
+        user_name: String,
+        gameRole: [{
+            _id: Schema.Types.ObjectId,
+            roleName: String,
+        }],
+    }]
 })
 
 const userGroups = new Schema({
     _id: Schema.Types.ObjectId,
     groupName: String,
-    members: [
+    users: [
         {
             _id: Schema.Types.ObjectId,
             first_name: String,
